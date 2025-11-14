@@ -1,8 +1,12 @@
 package spentenergy
 
 import (
+	"errors"
+	"log"
 	"time"
 )
+
+var errInvalidInput = errors.New("неверные входные данные")
 
 // Основные константы, необходимые для расчетов.
 const (
@@ -13,17 +17,56 @@ const (
 )
 
 func WalkingSpentCalories(steps int, weight, height float64, duration time.Duration) (float64, error) {
-	// TODO: реализовать функцию
+	if steps <= 0 {
+		log.Println("количество шагов должно быть больше 0")
+		return 0, errInvalidInput
+	}
+	if weight <= 0 {
+		log.Println("вес должен быть больше 0")
+		return 0, errInvalidInput
+	}
+	if height <= 0 {
+		log.Println("рост должен быть больше 0")
+		return 0, errInvalidInput
+	}
+	if duration <= 0 {
+		log.Println("продолжительность должна быть больше 0")
+		return 0, errInvalidInput
+	}
+	speed := MeanSpeed(steps, height, duration)
+	return walkingCaloriesCoefficient * weight * speed * duration.Hours(), nil
 }
-
 func RunningSpentCalories(steps int, weight, height float64, duration time.Duration) (float64, error) {
-	// TODO: реализовать функцию
-}
+	if steps <= 0 {
+		log.Println("количество шагов должно быть больше 0")
+		return 0, errInvalidInput
+	}
+	if weight <= 0 {
+		log.Println("вес должен быть больше 0")
+		return 0, errInvalidInput
+	}
+	if height <= 0 {
+		log.Println("вес должен быть больше 0")
+		return 0, errInvalidInput
+	}
+	if duration <= 0 {
+		log.Println("продолжительность должна быть больше 0")
+		return 0, errInvalidInput
+	}
 
+	speed := MeanSpeed(steps, height, duration)
+	return weight * speed * duration.Minutes() / minInH, nil
+}
 func MeanSpeed(steps int, height float64, duration time.Duration) float64 {
-	// TODO: реализовать функцию
+	if duration <= 0 {
+		return 0
+	}
+	dist := Distance(steps, height)
+	speed := dist / duration.Hours()
+	return speed
 }
 
 func Distance(steps int, height float64) float64 {
-	// TODO: реализовать функцию
+	lenStep := height * stepLengthCoefficient
+	return float64(steps) * lenStep / mInKm
 }
